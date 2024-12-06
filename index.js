@@ -66,6 +66,25 @@ app.post('/cad_usuario', (req, res) => {
 });//Fim da rota para cadastrar usuario via post
 
 
+//Rota para deletar um usuario
+app.delete('/deletar_usuario/:codigo', (req, res) => {
+    const id_informado = req.params.codigo;
+    const sql = "DELETE FROM tb_usuarios WHERE id_usuario = ?";
+    db.query(sql, [id_informado], (erro, resultados) => {
+        if(erro){
+            return res.json({ mensagem: "Falha ao deletar: "+erro.message });
+        }
+        if(resultados.affectedRows == 0){
+            return res.json({ mensagem: "Usuário inexistente" });
+        }
+        return res.json({ mensagem: "Usuário deletado com sucesso" });
+    });
+});
+
+
+
+
+
 //Rodar o servidor
 const porta = 3001;
 app.listen(porta, () => {
