@@ -81,9 +81,43 @@ app.delete('/deletar_usuario/:codigo', (req, res) => {
     });
 });
 
+//Criar rota para atualizar usuario
+app.put('/atualizar_usuario/:codigo', (req, res)=>{
+    const id_informado = req.params.codigo;
+    const {login_informado, senha_informada} = req.body;
+    const sql = `UPDATE tb_usuarios SET login_usuario = ?,
+                 senha_usuario = ? WHERE id_usuario = ?`;
+    db.query(sql, [login_informado, senha_informada, id_informado],
+            (erro, resultados) => {
+            if(erro){
+                return res.json({mensagem:"Falha ao atualizar: "+erro.message});
+            }
+            if(resultados.affectedRows == 0){
+                return res.json({mensagem:"Nada alterado"});
+            }
+            return res.json({mensagem: "Atualizado com sucesso"});
+        });
+});//Fim da rota para atualizar usuario
 
 
-
+//Rota para fazer login
+app.get('/fazerLogin/:usuario/:senha', (req, res)=>{
+    const usuario = req.params.usuario;
+    const senha = req.params.senha;
+    const sql = `SELECT * FROM tb_usuarios 
+                 WHERE login_usuario = ?
+                 AND senha_usuario = ?`;
+    db.query(sql, [usuario, senha], (erro, resultados)=>{
+        if(erro){
+            return res.json({mensagem: "Falha ao consultar: "+erro.message});
+        }
+        if(resultados.length == 0){
+            return res.json({ loginOK: false });
+        }else{
+            return res.json({loginOK: true});
+        }
+    });
+});//Fim da rota para fazer login
 
 //Rodar o servidor
 const porta = 3001;
